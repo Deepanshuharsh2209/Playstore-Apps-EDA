@@ -1,0 +1,267 @@
+---
+title: '**Visualization Project**'
+header-includes:
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+output:
+  pdf_document: 
+    df_print: paged
+    fig_width: 20
+    fig_height: 12
+    fig_crop: no
+    number_sections: yes
+    highlight: tango
+  html_document: default
+  word_document: default
+urlcolor: blue
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(cowplot)
+library(dplyr)
+library(reshape2)
+library(latex2exp)
+library(stringb)
+library(plotly)
+```
+
+\begin{centering}
+
+\LARGE
+{\bf Google Play Store}
+
+\vspace{1cm}
+
+\Large
+Deepanshu Mittal
+
+\vspace{0.3cm}
+
+\large
+Roll No: MDS202320
+
+\large
+DG1107: Visualization
+
+\large
+Email: \href{mailto:deepanshu.mds2023@cmi.ac.in}{deepanshu.mds2023@cmi.ac.in}
+
+\large
+Chennai Mathematical Institute
+
+
+
+
+
+\end{centering}
+
+\newpage
+
+\renewcommand{\contentsname}{Table of Contents}
+
+\renewcommand{\baselinestretch}{2.0}\normalsize
+\tableofcontents
+\renewcommand{\baselinestretch}{1.0}\normalsize
+
+\newpage
+
+## INTRODUCTION
+
+Google Play Store and formerly Android Market, is a digital distribution service operated and developed by Google. It serves as the official app store for certified devices running on the Android operating system and its derivatives, as well as Chrome-OS, allowing users to browse and download applications developed with the Android software development kit (SDK) and published through Google.
+
+Currently,in 2023, Google play store caters 3.553 million applications and has 2.5 billion active monthly users, much higher then its competitors Apple's app store with 1.642 million and Amazon's app store with 0.822 million applications.
+
+The Play Store apps data has enormous potential to drive app-making businesses to success. Actionable insights can be drawn for developers to work on and capture the Android market. In this project we will to do a basic EDA on the google app store data set.
+
+## DATASET DESCRIPTION
+
+Click to find the source for the data set. This dataset has 13 features related to apps like rating, review, size, installs etc. and 10841 rows of data. After eliminating anomalies and data cleaning, our final working dataset has 8886 rows of data.
+
+### Detailed description for the columns of the dataset:
+
+-   App : Contains name of the application.
+-   Category : Contains the application category like (Art and Design, Beauty, Games, Family, etc)
+-   Rating : Contains ratings given to the application.
+-   Reviews : Contains no of reviews given to the application.
+-   Size : Contains the size of the application in MBs.
+-   Installs : Contains the no of installs of the application.
+-   Type: Gives information about type of application (Free/ Paid).
+-   Price : If the application is paid, tells the price of the application.
+-   Content Rating : Tells about target audience of the application.
+-   Genres : Very similar to category, but gives more detail about the genre of the application.
+-   Last Updated : Gives the date of the last update of the application.
+-   Current Version : Tells about the current version of the application.
+-   Android Version : Tells about the Android version of the application.
+
+#### Full Forms for the abbreviations used in App's category:
+-  A & D : Art and Design
+-  A & V : Auto and Vehicles
+-  B & V : Books and Reference
+-  BUS   : Business
+-  COMM  : Communication
+-  DATE  : Dating
+-  EDU   : Education
+-  ENTERTAIN : Entertainment
+-  FIN   : Finance
+-  F & D : Food And Drinks
+-  H & F : Health and Fitness
+-  H & H : House and Home
+-  L & D : Library and Demo
+-  SHOP  : Shopping
+-  PHOTO : Photography
+-  T & L : Travel and Locals
+-  PERSONAL : Personalization
+-  PROD  : Productivity
+-  N & M : News and Magazines
+-  M & N : Maps and Navigation
+
+### Objectives
+
+Using the above dataset, we are trying to determine the following:
+
+-   No of applications per category.
+-   Average rating for each category.
+-   How may apps are installed in a certain range.
+-   Count of the apps based on Content rating.
+-   Correlation among the features ( Rating, Reviews, Size, Installs, Type )
+-   Relation between Installs and Reviews.
+-   Relation between Size and Installs.
+
+The above objectives can be achieved using histograms, bar plots, piechart and box plots for univariate analysis, scatter plots and line plots for bivariate analysis, and gradient scatter plots for multivariate analysis.
+
+## EXPLORATORY DATA ANALYSIS
+
+```{r, echo=FALSE}
+df=read.csv(file='playstore.csv',header = TRUE)
+library(ggplot2)
+freq=table(df$Category)
+fig.width=2
+fig.height=2
+par(mar = c(7, 4, 3, 2))
+barplot(freq, 
+        main = "No of apps per category",
+        xlab = "Category", ylab = "Count", col = "orange",las=2,pch=1)
+```
+
+##### [***FIG 1: Barplot Representation:***]{.underline} 
+In the above bar graph we got the counts of apps per category. As per the graph, Apps belonging to Family, Games and Tools category are large in number.
+
+```{r,echo=FALSE}
+df=read.csv(file='playstore.csv',header = TRUE)
+library(ggplot2)
+
+#average rating
+fig.width=20
+fig.height=20
+result <- aggregate(Rating ~ Category, data = df, FUN = mean)
+par(mar = c(7, 4, 3, 2))
+barplot(result$Rating,names.arg = result$Category, col = "skyblue", main = "Average Rating of Each Category", xlab = "Categories", ylab = " Average Rating",las=2)
+```
+
+
+
+##### [***FIG 2: Barplot Representation:***]{.underline} 
+In the above bar graph we can see average rating for each category. As per the graph, more or less average rating for each category is similar.
+
+```{r, echo=FALSE}
+df=read.csv(file='edit0.csv',header = TRUE)
+library(ggplot2)
+ins=table(df$Installs)
+fig.width=2
+fig.height=2
+par(mar = c(7, 4, 3, 2))
+barplot(ins, 
+        main = "Installs for apps",
+        xlab = "Installs", ylab = "No of Apps", col = "Orange",las=2,pch=1)
+```
+
+##### [***FIG 3: Barplot Representation:***]{.underline} 
+In the above bar graph we can observe no of apps with no of installs they received.
+
+
+```{r, fig.path='Assignment', fig.ext='png',echo=FALSE,message=FALSE}
+df=read.csv(file='edit0.csv',header = TRUE)
+library(ggplot2)
+df2=as.data.frame(table(df$Content.Rating))
+str(df2)
+p1=ggplot(df2,aes(y="",x=Freq,fill=Var1))+
+    geom_bar(stat = "identity", width = 4,col="white")+
+    ggtitle("Proportion of Apps Content Wise") +
+    coord_polar(theta="x")+
+    theme_void()+
+    labs(fill="Categories")
+p1   
+
+```
+
+##### [***FIG 4: Pie Chart Representation:***]{.underline} 
+In the above Piechart, we can observe that most of the applications on play store are meant to use by everyone, very few applications have adult tag associated to them.
+
+```{r,echo=FALSE,warning=FALSE}
+library(gridExtra)
+df=read.csv(file='find.csv',header = TRUE)
+library(ggplot2)
+p1<-ggplot(data = df, aes(x = Installs, y =Reviews)) +
+      geom_smooth() +
+      ggtitle("Relationship between Installs and Review") 
+      #theme(plot.title = element_text(size = 20, face = "bold"))
+
+p2<-ggplot(data = df, aes(x = Installs, y =Reviews,col=as.factor(df$Rating),size=as.factor(df$Type))) +
+      geom_point()+
+      ggtitle("Relationship between Installs and Review") +
+      theme(plot.title = element_text(size = 20, face = "bold"))+
+      coord_cartesian(ylim=c(-1000,1.5e+07))+
+      scale_y_log10()+ scale_x_log10()+
+      theme_minimal()+
+      labs(col="Rating")
+grid.arrange(p1,p2,ncol=2)
+```
+
+
+
+##### [***FIG 6: Smooth Representation:***]{.underline} 
+In the above graph, we can observe that there is a strong relationship between Installs and Reviews, larger the no of install, larger the no of reviews.Also signifying strong positive correlation.
+
+
+```{r,echo=FALSE}
+library(gridExtra)
+df=read.csv(file='find.csv',header = TRUE)
+library(ggplot2)
+p1<-ggplot(df, aes(x = Size, y = Installs)) +
+     geom_smooth()+
+     ggtitle("Relationship between Size and Installs")
+     #theme(plot.title = element_text(size = 20, face = "bold"))
+
+p2<-ggplot(data = df, aes(x = Size, y =Installs,col=as.factor(df$Rating))) +
+      geom_point()+
+      ggtitle("Relationship between Installs and Review") +
+      theme(plot.title = element_text(size = 20, face = "bold"))+
+      scale_y_log10()+
+      coord_cartesian(ylim=c(-1000,1.5e+07))+
+      theme_minimal()+
+      labs(col="Rating")
+grid.arrange(p1,p2,ncol=2)
+  
+```
+
+##### [***FIG 7: Smooth Representation:***]{.underline} 
+In the above graph, we can observe a strange yet obvious relationship between Size and Installs of the application. Between 0-100 (MBs) of app, the installs are increasing, then from 100-250 (MBs) the no of installs are decreasing and after that no of installs are constant. Although confidence intervals have increased as the size of application increased.
+
+\newpage
+
+## RESULTS
+
+-  There are millions of application on Google Play Store, and the major dominating category among them are Family, Games and Tools application.
+-  In our analysis, we took 33 unique categories and found out that more or less average rating for each category is similar.
+-  We found out that most of the applications on play store are meant to use by everyone, very few applications have adult tag associated to them.
+-  Using Heatmap, we found out that there is a strong correlation between Installs and Review.
+- We found out applications with size between 50-100 MBs usually have maximum downloads and as we keep on increasing the size of application, the installs decreases, also signifying negative correlation.
+
+
+
+## CONCLUSION
+
+In this project, we had a dataset from Google play store with 13 features and 10841 rows. Here we tried to establish correlations between different variables in the dataset and how they are dependent on different demographics. During our analysis, we delivered the above mentioned objectives and found out some interesting insights from the data like Google Play Store boasts a vast array of applications, with Family, Games, and Tools being the dominant categories, across 33 unique categories, we observed that the average user ratings for these apps are generally consistent, indicating a relatively uniform user experience, most apps are family-friendly, as only a small proportion carries an adult tag, suggesting a focus on a broad audience, the analysis revealed a strong positive correlation between the number of installs and the number of reviews, highlighting the influence of user engagement on app popularity, interestingly, apps sized between 50-100 MB tend to have the highest number of downloads, while larger apps experience decreasing install rates, illustrating a negative correlation between app size and popularity. Although our analysis is quite basic, it gave insights that have enormous potential to drive app-making businesses to success.
